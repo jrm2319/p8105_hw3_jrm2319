@@ -49,6 +49,22 @@ Key variables include 'id' and 'date'. 'id' is a key variable as it can be used 
 
 There are values missing for observations throughout the dataset, in total there 3,387,623 missing values across all variables. Missing values are identified by "NA." 'id' and 'date' are not missing for any observation. 'tmax' and 'tmin' have the most missing values with 1,134,358 and 1,134,420 values missing, respectively. 
 
+## Part 2: Data Cleaning
+```{r eval=FALSE, include=FALSE}
+library(tidyr)
+
+ny_noaa_working = ny_noaa %>% 
+  separate(date, into = c("year", "day", "month"), sep = "-")
+```
+
+## Part 3: Two-panel plot of avg. max temperature 
+
+## Part 4: Two-panel plots 
+### Two-panel plot of avg max temp in January 
+### Two-panel plot of tmin vs. tmax 
+### Plot of distribution of snowfall 
+
+
 ### **Problem 2**
 
 ```{r}
