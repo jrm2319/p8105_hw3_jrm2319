@@ -50,12 +50,22 @@ Key variables include 'id' and 'date'. 'id' is a key variable as it can be used 
 There are values missing for observations throughout the dataset, in total there 3,387,623 missing values across all variables. Missing values are identified by "NA." 'id' and 'date' are not missing for any observation. 'tmax' and 'tmin' have the most missing values with 1,134,358 and 1,134,420 values missing, respectively. 
 
 ## Part 2: Data Cleaning
-```{r eval=FALSE, include=FALSE}
+Separating the date into month, day, and year. Also converting units of prcp from 1/10 of a mm to a mm by making a new variable 'prcp_mm'. Now, precipitation and snowfall are in the same units. Also, adjusted units of tmax and tmin to make them easier to understand--units are now in degrees Celsius. 
+```{r}
 library(tidyr)
+library(dplyr)
 
 ny_noaa_working = ny_noaa %>% 
-  separate(date, into = c("year", "day", "month"), sep = "-")
+  separate(date, into = c("year", "month", "day"), sep = "-") %>% 
+  mutate(prcp_mm = prcp/10) %>% 
+  mutate(tmax = as.integer(tmax)) %>% 
+  mutate(tmin = as.integer(tmin)) %>% 
+  mutate(tmax_c = tmax/10) %>% 
+  mutate(tmin_c = tmin/10)
 ```
+
+
+
 
 ## Part 3: Two-panel plot of avg. max temperature 
 
