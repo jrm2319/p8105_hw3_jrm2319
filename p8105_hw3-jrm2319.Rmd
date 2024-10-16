@@ -1,0 +1,19 @@
+---
+title: "Homework 3"
+output: github_document
+Name: Jasmin Martinez
+Date: 10/16/24
+---
+### **Problem 1**
+
+```{r}
+```
+
+### **Problem 2**
+
+```{r}
+```
+
+### **Problem 2**
+```{r}
+```
