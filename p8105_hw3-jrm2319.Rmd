@@ -4,10 +4,50 @@ output: github_document
 Name: Jasmin Martinez
 Date: 10/16/24
 ---
-### **Problem 1**
+# **Problem 1**
 
+## Part 1: Loading data set & understanding it
+#### Load in NY NOAA dataset from p8105 website 
 ```{r}
+library(p8105.datasets)
+data("ny_noaa")
+str(ny_noaa)
+sum(is.na(ny_noaa))
 ```
+
+
+```{r include=FALSE}
+sum(is.na(ny_noaa$id))
+sum(is.na(ny_noaa$date))
+sum(is.na(ny_noaa$prcp))
+sum(is.na(ny_noaa$snow))
+sum(is.na(ny_noaa$snwd))
+sum(is.na(ny_noaa$tmax))
+sum(is.na(ny_noaa$tmin))
+```
+
+```{r include=FALSE}
+ny_noaa
+```
+#### Description of data
+This data set has about 2.6 million observations and 7 variables. The variable names, order, and variable type are as follows: 
+
+id: weather station ID--*character variable type*
+
+date: date of observation- *date variable type*
+
+prcp: precipitation (tenths of mm)- *integer variable type*
+
+snow: snowfall (mm)- *integer variable type*
+snwd: snow depth (mm)- *integer variable type*
+
+tmax: maximum temperature (tenths of degrees C)- *character variable type*
+
+tmin: minimum temperature (tenths of degrees C)- *character variable type*
+
+Key variables include 'id' and 'date'. 'id' is a key variable as it can be used to group weather stations and 'date' is a key variable because it can help filter information from a specific date range. 
+
+There are values missing for observations throughout the dataset, in total there 3,387,623 missing values across all variables. Missing values are identified by "NA." 'id' and 'date' are not missing for any observation. 'tmax' and 'tmin' have the most missing values with 1,134,358 and 1,134,420 values missing, respectively. 
 
 ### **Problem 2**
 
