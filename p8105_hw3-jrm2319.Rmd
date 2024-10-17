@@ -94,7 +94,7 @@ ggplot(ny_noaa_janjul, aes(x = year, y = mean_tmax_c, color = month)) +
   facet_grid(. ~ month)
 ```
 
-### **Problem 2**
+# **Problem 2**
 
 ## Part 1: 
 
@@ -120,8 +120,11 @@ demographic = demographic %>%
 full_df = 
   left_join(demographic, accel, by = "SEQN")
 ```
+
 ## Part 2:
-#### Table of men and women in each edu. category 
+
+#### Table of men and women in each edu. category
+
 ```{r}
 education_by_sex = full_df %>%
   group_by(education, sex) %>%
@@ -133,6 +136,7 @@ education_by_sex
 For the Less than High School and the More than High School, there is about an equal distribution of males and females. However, in the high school equivalent there are more males then females. 
 
 #### Visualization of age distributions 
+
 ```{r}
 ggplot(full_df, aes(x = age, fill = sex)) +
   geom_histogram(binwidth = 2, position = "dodge", alpha = 0.5) +
@@ -145,7 +149,9 @@ ggplot(full_df, aes(x = age, fill = sex)) +
 Overall, the distribution of females and males in each category is similar. In the 'Less than High School', individuals tend to be older, especially for females. In the 'More than High School' category individuals tend to be younger and the distribution of males and females are similar. 
 
 ## Part 3: 
+
 #### Aggregrate across minutes to create total activity variable for each participant 
+
 ```{r}
 full_df = full_df %>%
   mutate(total_MIMS = rowSums(select(., min1:min1440), na.rm = TRUE)) %>% 
@@ -153,6 +159,7 @@ full_df = full_df %>%
 ```
 
 #### Plot: total activities (y-axis) against age (x-axis)
+
 ```{r}
 ggplot(full_df, aes(x = age, y = total_MIMS, color = sex)) +
   geom_point(alpha = 0.5) +  
@@ -172,6 +179,7 @@ For the 'High school equivalent' education category, both males and females have
 Finally, for the 'More than High School' education category, there is a downward trend in total activity for both males and females but this downward trend is less drastic than the downward trend seen in the 'Less than High School' education category. In this education category, males have a slight increase in total activity from ages 40-50 and females have a slight increase in total activity from ages 50-60. 
 
 ## Part 4: 24-hour activity time courses for each education level 
+
 ```{r}
 pt4_data <- full_df %>%
   pivot_longer(cols = starts_with("min"), 
@@ -206,7 +214,7 @@ For all education categories, activity level decrease steadily from 8pm to midni
 
 Overall, females and males in the 'less than High School' and 'high school equivalent' categories have similar activity levels throughout the day. In the 'more than High School', females have lower activity levels throughout the entire day compared to males. 
 
-### **Problem 3**
+# **Problem 3**
 
 #### import all data sets
 ```{r}
