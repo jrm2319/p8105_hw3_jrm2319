@@ -75,7 +75,7 @@ The most commonly observed value for snowfall is 0mm, the description of the NOA
 
 ## Part 3: Two-panel plot of avg. max temperature 
 
-```{r}
+```{r include=FALSE}
 library(ggplot2)
 
 ny_noaa_working = ny_noaa_working %>% 
@@ -93,9 +93,13 @@ ggplot(ny_noaa_janjul, aes(x = year, y = mean_tmax_c, color = month)) +
   geom_point(aes(size = mean_tmax_c), alpha =.5) +
   facet_grid(. ~ month)
 ```
+
 ### **Problem 2**
+
 ## Part 1: 
+
 #### Load, tidy, organize data 
+
 ```{r}
 library(readr)
 library(tidyr)
@@ -113,27 +117,196 @@ demographic = demographic %>%
                                   "High School Equivalent", 
                                   "More than High School")))
 
+full_df = 
+  left_join(demographic, accel, by = "SEQN")
 ```
 ## Part 2:
 #### Table of men and women in each edu. category 
 ```{r}
-education_by_sex = demographic %>%
+education_by_sex = full_df %>%
   group_by(education, sex) %>%
   summarize(count = n(), .groups = 'drop') %>%
-  pivot_wider(names_from = sex, values_from = count, values_fill = list(count = 0)) %>% 
-  knitr::kable(digits =1)
+  pivot_wider(names_from = sex, values_from = count, values_fill = list(count = 0))
+education_by_sex
 ```
 
+For the Less than High School and the More than High School, there is about an equal distribution of males and females. However, in the high school equivalent there are more males then females. 
+
 #### Visualization of age distributions 
+```{r}
+ggplot(full_df, aes(x = age, fill = sex)) +
+  geom_histogram(binwidth = 2, position = "dodge", alpha = 0.5) +
+  facet_wrap(~ education, scales = "free_y") +
+  labs(title = "Age Distribution by Sex and Education Category",
+       x = "Age",
+       y = "Count")
+```
+
+Overall, the distribution of females and males in each category is similar. In the 'Less than High School', individuals tend to be older, especially for females. In the 'More than High School' category individuals tend to be younger and the distribution of males and females are similar. 
 
 ## Part 3: 
 #### Aggregrate across minutes to create total activity variable for each participant 
-#### Plot 
+```{r}
+full_df = full_df %>%
+  mutate(total_MIMS = rowSums(select(., min1:min1440), na.rm = TRUE)) %>% 
+  select(SEQN, sex, age, BMI, education, total_MIMS, everything())
+```
 
-## Part 4: 
-#### Three-panel plot 
-#### Description & Conclusion 
+#### Plot: total activities (y-axis) against age (x-axis)
+```{r}
+ggplot(full_df, aes(x = age, y = total_MIMS, color = sex)) +
+  geom_point(alpha = 0.5) +  
+  geom_smooth(se = FALSE) +
+  facet_wrap(~ education) + 
+  labs(title = "Total Activities by Age, Sex, and Education Level",
+       x = "Age",
+       y = "Total Activities (MIMS)") +
+  theme(legend.position = "top")
+
+```
+
+For the 'Less than High School' education category, total activity (MIMS) decreases as individuals age for both males and females. However, both males and females have a slight increase in total activity around the age of 60. In this education category, prior to the age of 40 females have a higher total activity compared to males. As individuals age, overall males have a higher total activity compared to females.  
+
+For the 'High school equivalent' education category, both males and females have an increase in total activity from the age of 20-40, with females having a higher total activity during that range. From the age of 40-60, both males and females decrease in total activity. For males, from ages 60-80, total activity stays relatively stagnant while, during that age, total activity slightly increases and then decrease for females. 
+
+Finally, for the 'More than High School' education category, there is a downward trend in total activity for both males and females but this downward trend is less drastic than the downward trend seen in the 'Less than High School' education category. In this education category, males have a slight increase in total activity from ages 40-50 and females have a slight increase in total activity from ages 50-60. 
+
+## Part 4: 24-hour activity time courses for each education level 
+```{r}
+pt4_data <- full_df %>%
+  pivot_longer(cols = starts_with("min"), 
+               names_to = "minute", 
+               values_to = "activity") 
+
+pt4_data <- pt4_data %>%
+  mutate(minute = as.numeric(gsub("min", "", minute)))
+
+ggplot(pt4_data, aes(x = minute/60, y = activity, color = sex)) +
+  geom_smooth(aes(color = sex), se = FALSE, linetype = "solid") + #only included this for simplicity 
+  facet_wrap(~ education, nrow = 3) +  
+  labs(title = "24-Hour Activity Time Courses by Education Level",
+       x = "Hour of the Day",
+       y = "Activity Level")
+```
+
+```{r eval=FALSE, include=FALSE}
+#this code inlcude each indiviaul point, but the smooth lines are difficult to see 
+ggplot(pt4_data, aes(x = minute/60, y = activity, color = sex)) +
+  geom_point(aes(color = sex), alpha = 0.2) + 
+  geom_smooth(aes(color = sex), se = FALSE, linetype = "solid") +
+  facet_wrap(~ education, nrow = 3) +  
+  labs(title = "24-Hour Activity Time Courses by Education Level",
+       x = "Hour of the Day",
+       y = "Activity Level")
+```
+
+For all education categories, activity level increases steadily from 5am to 10am for both males and females--however, during this time females in the 'more than High School' and 'High school equivalent' categories have higher activity levels compared to males in those education categories. 
+
+For all education categories, activity level decrease steadily from 8pm to midnight for both males and females. However, those in the 'less than high school' education category begin to decrease in activity level starting at 12pm while those in the 'high school equivalent' and 'more than High School' begin to decrease activity level starting at 8pm. 
+
+Overall, females and males in the 'less than High School' and 'high school equivalent' categories have similar activity levels throughout the day. In the 'more than High School', females have lower activity levels throughout the entire day compared to males. 
 
 ### **Problem 3**
+
+#### import all data sets
 ```{r}
+library(readr)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+jan_2020 = read_csv("./Data_HW3/Jan 2020 Citi.csv")
+jan_2024 = read_csv("./Data_HW3/Jan 2024 Citi.csv")
+july_2020 = read_csv("./Data_HW3/July 2020 Citi.csv")
+july_2024 = read_csv("./Data_HW3/July 2024 Citi.csv")
 ```
+
+#### clean data sets
+```{r}
+jan_2020 = jan_2020 %>% 
+  mutate(month = 'Jan',
+         year = '2020')
+
+jan_2024 = jan_2024 %>% 
+  mutate(month = 'Jan',
+         year = '2024')
+
+july_2020 = july_2020 %>% 
+  mutate(month = 'July',
+         year = '2020')
+
+july_2024 = july_2024 %>% 
+  mutate(month = 'July',
+         year = '2024')
+```
+
+
+#### tidy the data sets
+```{r}
+binded_df = 
+  bind_rows(jan_2020, jan_2024, july_2020, july_2024) %>% 
+  relocate(ride_id) %>% 
+  arrange(ride_id)
+```
+
+The dataset 'binded_df' was created from the four datasets provided from January 2020 & 2024 and July 2020 & 2024. Each entry has a unique ride_id and includes the type of bike used (electric or classic), the weekday the ride occurred, the duration of the ride in minutes, where the ride started and ended, and if the rider was a member or not. Additonally, two new variables were created for each data set, before being merged. These variables are "month" and "year" that specify the month and year that the observation is from. 
+
+The four datasets were merged using bind_rows since each observations was unique. In the merged dataset, called 'binded_df' there are 99,485 observations and 9 variables. 
+
+#### Reader-friendly table 
+```{r}
+summary_table_p3 = binded_df %>%
+  group_by(year, month, member_casual) %>% 
+  summarise(total_rides = n(), .groups = 'drop') %>%
+  pivot_wider(names_from = member_casual, values_from = total_rides, values_fill = list(total_rides = 0))
+summary_table_p3
+```
+
+The table above shows the total number of rides each month/year and is separated by causal and member riders. January 2020 has the smaller number of causal riders and member riders while July 2024 has the largest number of causal and member riders. Given the climate of these months in New York City this makes sense. This may be also due to the increase popularity of Citi Bike in the city from 2020 to 2024. Additionally, across all four time periods, more member riders were using Citi Bike compared to casual riders--likely due to the lower rental rates for member riders.
+
+#### 5 most popular starting stations
+
+```{r}
+pop_stations = binded_df %>%
+  filter(year == "2024", month == "July") %>%
+  group_by(start_station_name) %>% 
+  summarise(tot_rides = n(), .groups = 'drop') %>% 
+  arrange(desc(tot_rides))
+head(pop_stations)
+```
+
+#### Plot: effect of day of week, month, amd year on median ride duration
+
+```{r}
+median_p3 = binded_df %>%
+  group_by(year, month, weekdays) %>%  
+  summarise(median_p3 = median(duration, na.rm = TRUE), .groups = 'drop')
+
+ggplot(median_p3, aes(x = weekdays, y = median_p3, color = as.factor(year))) +
+  geom_line(aes(group = year), size = 1) +  
+  facet_wrap(~ month, nrow = 2) + 
+  labs(title = "Effects of Day of the Week, Month, and Year on Median Ride Duration",
+       x = "Day of the Week",
+       y = "Median Ride Duration (minutes)",
+       color = "Year")
+
+```
+
+Overall, median ride duration is higher in July than it is in January, during both year--this makes sense given the climate of New York City during these months. Additionally, during both months, ride duration is higher on the weekends (Saturday & Sunday) across both years. We also see that ride duration was higher, overall, across both months in 2020. This may have been due to the COVID-19 pandemic, social isolation may have increased the need for physical activity and time outside of the home which may have increased ride duration. 
+
+#### Plot: impact of month, membership status, and bike type on ride duration
+```{r}
+data_2024 = binded_df %>%
+  filter(year == '2024')  
+
+ggplot(data_2024, aes(x = duration, fill = rideable_type)) +
+  geom_histogram(binwidth = 1, position = "dodge", alpha = 0.7) +  
+  facet_wrap(member_casual ~ month, nrow = 2) + 
+  labs(title = "Distribution of Ride Duration by Month and Membership Status (2024)",
+       x = "Ride Duration (minutes)",
+       y = "Count",
+       fill = "Bike Type")
+```
+
+Across both boths and rider type (casual and members) electric bikes were ridden more than classic bikes. In general, there were more rides in July 2024 compared to January 2024. Additionally, in July 2024 electric bikes were ridden longer than classic bikes by riders. 
+
