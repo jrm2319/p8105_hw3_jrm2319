@@ -216,6 +216,8 @@ Overall, females and males in the 'less than High School' and 'high school equiv
 
 # **Problem 3**
 
+## Part 1: 
+
 #### import all data sets
 ```{r}
 library(readr)
@@ -261,6 +263,8 @@ The dataset 'binded_df' was created from the four datasets provided from January
 
 The four datasets were merged using bind_rows since each observations was unique. In the merged dataset, called 'binded_df' there are 99,485 observations and 9 variables. 
 
+## Part 2: 
+
 #### Reader-friendly table 
 ```{r}
 summary_table_p3 = binded_df %>%
@@ -272,6 +276,8 @@ summary_table_p3
 
 The table above shows the total number of rides each month/year and is separated by causal and member riders. January 2020 has the smaller number of causal riders and member riders while July 2024 has the largest number of causal and member riders. Given the climate of these months in New York City this makes sense. This may be also due to the increase popularity of Citi Bike in the city from 2020 to 2024. Additionally, across all four time periods, more member riders were using Citi Bike compared to casual riders--likely due to the lower rental rates for member riders.
 
+## Part 3:
+
 #### 5 most popular starting stations
 
 ```{r}
@@ -282,6 +288,8 @@ pop_stations = binded_df %>%
   arrange(desc(tot_rides))
 head(pop_stations)
 ```
+
+## Part 4:
 
 #### Plot: effect of day of week, month, amd year on median ride duration
 
@@ -301,6 +309,8 @@ ggplot(median_p3, aes(x = weekdays, y = median_p3, color = as.factor(year))) +
 ```
 
 Overall, median ride duration is higher in July than it is in January, during both year--this makes sense given the climate of New York City during these months. Additionally, during both months, ride duration is higher on the weekends (Saturday & Sunday) across both years. We also see that ride duration was higher, overall, across both months in 2020. This may have been due to the COVID-19 pandemic, social isolation may have increased the need for physical activity and time outside of the home which may have increased ride duration. 
+
+## Part 5:
 
 #### Plot: impact of month, membership status, and bike type on ride duration
 ```{r}
