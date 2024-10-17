@@ -95,21 +95,44 @@ ggplot(ny_noaa_janjul, aes(x = year, y = mean_tmax_c, color = month)) +
 ```
 ### **Problem 2**
 ## Part 1: 
-# Load, tidy, organize data 
+#### Load, tidy, organize data 
 ```{r}
+library(readr)
+library(tidyr)
+
+demographic = read_csv("./Data_HW3/nhanes_covar.csv", skip = 4)
+accel = read_csv("./Data_HW3/nhanes_accel.csv")
+
+demographic = demographic %>% 
+  filter(age >= 21) %>% 
+  drop_na() %>% 
+  mutate(
+    sex = factor(sex, levels = c(1, 2), labels = c("Male", "Female")),
+    education = factor(education, levels = c(1, 2, 3), 
+                       labels = c("Less than High School", 
+                                  "High School Equivalent", 
+                                  "More than High School")))
 
 ```
 ## Part 2:
-# Table of men and women in each edu. category 
-# Visualization of age distributions 
+#### Table of men and women in each edu. category 
+```{r}
+education_by_sex = demographic %>%
+  group_by(education, sex) %>%
+  summarize(count = n(), .groups = 'drop') %>%
+  pivot_wider(names_from = sex, values_from = count, values_fill = list(count = 0)) %>% 
+  knitr::kable(digits =1)
+```
+
+#### Visualization of age distributions 
 
 ## Part 3: 
-# Aggregrate across minutes to create total activity variable for each participant 
-# Plot 
+#### Aggregrate across minutes to create total activity variable for each participant 
+#### Plot 
 
 ## Part 4: 
-# Three-panel plot 
-# Description & Conclusion 
+#### Three-panel plot 
+#### Description & Conclusion 
 
 ### **Problem 3**
 ```{r}
